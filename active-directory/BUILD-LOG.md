@@ -1,32 +1,32 @@
 ## DC01 Setup
 
 **Static IP Configuration** — Assigned 10.0.0.10 with subnet 255.255.255.0, gateway 10.0.0.1 (pfSense), DNS pointing to 127.0.0.1 (itself).
-![Static IP](active-directory/01_Static_IP_Config.png)
+![Static IP](01_Static_IP_Config.png)
 
 **Hostname** — Set to DC01.
-![Hostname](active-directory/02_Hostname.png)
+![Hostname](02_Hostname.png)
 
 **AD DS Promotion** — Promoted to domain controller for lab.local. Server online at 10.0.0.10.
-![AD DS](active-directory/03_Active_Directory.png)
+![AD DS](03_Active_Directory.png)
 
 **DNS — Forward Lookup Zone** — lab.local and _msdcs.lab.local zones created automatically during AD promotion. Both Active Directory-Integrated.
-![Forward Lookup](active-directory/04_Forward_Lookup_Zone.png)
+![Forward Lookup](04_Forward_Lookup_Zone.png)
 
 **DNS — Reverse Lookup Zone** — Created for 10.0.0.x network, enabling IP-to-hostname resolution.
-![Reverse Lookup](active-directory/05_Reverse_Lookup_Zone.png)
+![Reverse Lookup](05_Reverse_Lookup_Zone.png)
 
 **DNS — Scavenging** — Enabled at 7-day intervals to automatically clean stale DNS records.
-![Scavenging](active-directory/06_Scavenging.png)
+![Scavenging](06_Scavenging.png)
 
 **DNS — Forwarders** — Configured external DNS forwarders (1.1.1.1, 8.8.8.8, 1.0.0.1, 8.8.4.4) for resolving external domains.
-![Forwarders](active-directory/07_Forwarders.png)
+![Forwarders](07_Forwarders.png)
 
 **DHCP — Authorization Error (Troubleshooting)** — DHCP authorization failed with Error 20070 because VirtualBox's default "vboxuser" account lacked domain admin permissions. Resolved by logging in as LAB\Administrator and re-authorizing.
-![DHCP Error](active-directory/08_DHCP_Config_Error.png)
-![VBox User Permissions](active-directory/09_vbox_user_issue.png)
+![DHCP Error](08_DHCP_Config_Error.png)
+![VBox User Permissions](09_vbox_user_issue.png)
 
 **DHCP — Scope Configuration** — Created scope 10.0.0.100–200 with /24 subnet mask, 8-hour lease, gateway 10.0.0.1, DNS 10.0.0.10.
-![DHCP Scope](active-directory/10_DHCP_Scope.png)
+![DHCP Scope](10_DHCP_Scope.png)
 
 ## DHCP Scope Options
 
