@@ -133,7 +133,7 @@ After fixing replication and syncing, shut DC01 down again. This time john.mitch
 
 ## Exercise 8: NET-001 — Wrong DNS on Client (Ticket Simulation)
 
-Ticket: John Mitchell (Sales) — "Internet is completely down. Can't get to Google, SharePoint, nothing loads."
+![Ticket #1](20_Ticket_One_DNS_Issue.png)
 Diagnosis: ipconfig /all showed DNS server set to static 10.0.0.30 instead of DHCP-assigned 10.0.0.10. IP, gateway, DHCP lease all correct.
 Root cause: Wrong DNS means names can't resolve, but network connectivity is intact. ping 8.8.8.8 would succeed, ping google.com would fail. Classic "can ping by IP, can't browse" pattern.
 Fix: Switched adapter back to DHCP, ipconfig /flushdns, ipconfig /release and /renew. Connection restored.

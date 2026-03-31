@@ -3,13 +3,13 @@
 **Static IP Configuration** — Assigned 10.0.0.10 with subnet 255.255.255.0, gateway 10.0.0.1 (pfSense), DNS pointing to 127.0.0.1 (itself).
 ![Static IP](01_Static_IP_Config.png)
 
-**Hostname** — Set to DC01.
+**Hostname** - Set to DC01.
 ![Hostname](02_Hostname.png)
 
-**AD DS Promotion** — Promoted to domain controller for lab.local. Server online at 10.0.0.10.
+**AD DS Promotion** - Promoted to domain controller for lab.local. Server online at 10.0.0.10.
 ![AD DS](03_Active_Directory.png)
 
-**DNS — Forward Lookup Zone** — lab.local and _msdcs.lab.local zones created automatically during AD promotion. Both Active Directory-Integrated.
+**DNS - Forward Lookup Zone** - lab.local and _msdcs.lab.local zones created automatically during AD promotion. Both Active Directory-Integrated.
 ![Forward Lookup](04_Forward_Lookup_Zone.png)
 
 **DNS — Reverse Lookup Zone** — Created for 10.0.0.x network, enabling IP-to-hostname resolution.

@@ -10,6 +10,7 @@ Phase 3: pfSense deployment as the network gateway/firewall, VLAN segmentation f
 
 Deployed pfSense CE on a VirtualBox VM with two network adapters:
 - **Adapter 1 (NAT):** WAN interface — internet-facing, received 10.0.2.15 from VirtualBox NAT DHCP
+
 - **Adapter 2 (Internal Network):** LAN interface — lab network at 10.0.0.1/24
 
 pfSense sits between the lab network and the internet. Every device on 10.0.0.0/24 has its default gateway set to 10.0.0.1 (configured in DC01's DHCP scope back in Phase 1). All internet-bound traffic flows through pfSense, which handles routing, NAT translation, and firewall enforcement.
@@ -20,6 +21,8 @@ pfSense sits between the lab network and the internet. Every device on 10.0.0.0/
 
 During install, disabled VLAN tagging at the console prompt — VLANs are configured later through the web interface where there's more control. Set LAN IP to 10.0.0.1/24 as a static assignment.
 
+![pfSense LAN Config](01_pfsense_LAN_Config.png)
+
 pfSense warned against using `.local` as the domain suffix due to mDNS conflicts. The `.local` TLD is reserved for Multicast DNS (automatic device discovery), and using it for Active Directory can cause intermittent name resolution failures. In production, Microsoft recommends a domain you actually own. For the lab, `.local` works fine since it was already established in Phase 1.
 
 ### Troubleshooting: Couldn't Reach Web Interface
@@ -28,8 +31,14 @@ After installation, attempted to access the pfSense web interface at https://10.
 
 **Diagnostic process:**
 1. `ping 10.0.0.1` — **Success.** Layer 3 connectivity confirmed, pfSense is reachable.
+
+![Troubleshooting pfSense Ping](02_Troubleshooting_pfsense_Ping.png)
+
 2. `Test-NetConnection 10.0.0.1 -Port 443` — **Failed.** Port 443 not responding.
 3. `Test-NetConnection 10.0.0.1 -Port 80` — **Failed.** Port 80 not responding.
+
+![Test-NetConnection 10.0.0.1](03_tnc_10.0.0.1.png)
+
 4. Researched `pfctl -d` to temporarily disable pfSense's firewall to test if it was blocking web access.
 5. **Caught the real issue:** DC01 was still on VirtualBox's NAT Network adapter, not the Internal Network where pfSense's LAN interface lived. They were on completely different virtual networks — the ping succeeded because VirtualBox NAT can route to Internal Network addresses, but the web service ports weren't accessible across that boundary.
 
@@ -46,6 +55,8 @@ After switching all VMs to Internal Network, verified the full network path from
 - `nslookup google.com` — External DNS resolution working ✓
 - `nslookup dc01.lab.local` — Internal DNS resolution working ✓
 
+![pfSense Dashboard](05_pfsense_dashboard.png)
+
 Full chain operational: workstation → pfSense (gateway/NAT) → internet, with DNS flowing through DC01 → pfSense → external forwarders.
 
 ---
@@ -57,6 +68,8 @@ Full chain operational: workstation → pfSense (gateway/NAT) → internet, with
 Created VLAN 20 (10.0.20.0/24) as a guest network, simulating corporate vs. guest Wi-Fi isolation. The corporate network (10.0.0.0/24) contains domain controllers, file shares, and workstations. The guest network provides internet access only — no visibility into corporate resources.
 
 pfSense acts as the gateway for both networks: 10.0.0.1 for corporate, 10.0.20.1 for guests.
+
+![VLAN 20 Config](06_VLAN_20_Config.png)
 
 ### Key Insight: VLANs Don't Enforce Isolation — Firewalls Do
 
@@ -76,6 +89,8 @@ Two DHCP servers in the environment, each responsible for their own network:
 
 No overlap, no conflict.
 
+![VLAN 20 DHCP](07_VLAN_20_DHCP.png)
+
 ### Firewall Rules — Order Matters
 
 pfSense processes rules top to bottom and stops at the first match. Order determines behavior.
@@ -91,6 +106,12 @@ Rules on VLAN 20 interface, in order:
 **Why this order matters:**
 - Rule 1 (DNS) must be above Rule 2 (block corporate). If the block rule was first, it would catch DNS queries headed to any destination and kill them before the DNS allow rule was ever evaluated. Guests would have "internet access" that doesn't work because nothing resolves — the exact symptom pattern of "can ping 8.8.8.8 but can't browse."
 - Rule 2 (block) must be above Rule 3 (allow internet). If the allow rule was first, guest traffic to corporate ports 80/443 would match the allow rule and pass through — the block would never fire.
+
+![Firewall Rule Allow DNS](08_Firewall_Rule_Allow_DNS.png)
+
+![Firewall Rule Block Network](09_Firewall_Rule_Block_Network.png)
+
+![Firewall Rule Set](10_Firewall_Rule_Set.png)
 
 ---
 
@@ -108,6 +129,11 @@ Built a full OpenVPN remote access server enabling authenticated users to secure
 - **DNS Server:** 10.0.0.10 (DC01) — pushed to VPN clients so they can resolve internal names like dc01.lab.local.
 
 **Server mode:** Remote Access (SSL/TLS + User Auth) — requires both a valid certificate AND username/password for connection.
+
+![VPN Server Certificate](11_VPN_Server_Certificate.png)
+
+![VPN Server Created](12-VPN-Server_Created.png)
+
 
 ### Firewall Rules for VPN
 
