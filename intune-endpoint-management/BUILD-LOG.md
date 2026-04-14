@@ -57,8 +57,6 @@ Assigned to SG-Autopilot-Devices. Device evaluated as Compliant immediately afte
 
 Created a configuration profile enforcing BitLocker device encryption with silent encryption enabled (no user prompt). After deployment, BitLocker activated on the device and the recovery key was automatically escrowed to Entra ID.
 
-**Interview answer:** "When a user calls asking for their BitLocker recovery key - usually after a BIOS update or hardware change - I look it up in Entra ID under their device record. The key is stored there automatically when BitLocker is enforced through Intune."
-
 Recovery key verified at: Entra ID → Devices → PA-CL111 → Recovery Keys.
 
 ### Device Restrictions
@@ -100,7 +98,7 @@ This is what the entire lab has been building toward. Here's what happens when a
 12. **Outlook auto-configures** with the user's mailbox
 13. **User is working** within an hour - fully configured, fully secured, zero manual setup
 
-No IT person touched the laptop. No domain join. No GPO. No mapped drives to configure. Everything flows from the identity pipeline through the cloud.
+Everything flows from the identity pipeline through the cloud.
 
 ---
 
