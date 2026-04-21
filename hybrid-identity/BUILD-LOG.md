@@ -23,6 +23,7 @@ Get-ADUser -Filter * -SearchBase "OU=Corp,DC=lab,DC=local" | ForEach-Object {
     Set-ADUser $_ -UserPrincipalName "$($_.SamAccountName)@MeridianLabSolutions.onmicrosoft.com"
 }
 ```
+![PowerShell_Update_UPN](01_PowerShell_Update_UPN.png)
 
 ### proxyAddresses Attribute
 
@@ -33,6 +34,7 @@ Get-ADUser -Filter * -SearchBase "OU=Corp,DC=lab,DC=local" | ForEach-Object {
     Set-ADUser $_ -Add @{proxyAddresses="SMTP:$($_.SamAccountName)@MeridianLabSolutions.onmicrosoft.com"}
 }
 ```
+![PowerShell_proxyAddresses](02_PowerShell_proxyAddresses.png)
 
 The uppercase `SMTP:` prefix designates the primary email address. Exchange Online uses this attribute to determine the user's email address during mailbox provisioning.
 
@@ -42,6 +44,8 @@ The uppercase `SMTP:` prefix designates the primary email address. Exchange Onli
 
 Installed Entra Connect Sync on DC01 (dedicated sync server is ideal in production, but DC01 works for a lab).
 
+![Entra_Connect_Sync_Agent](03_Entra_Connect_Sync_Agent.png)
+
 ### Configuration Choices
 
 **Sign-in method: Password Hash Synchronization (PHS)**
@@ -50,6 +54,8 @@ Installed Entra Connect Sync on DC01 (dedicated sync server is ideal in producti
 - Works even if on-prem goes down - M365 remains accessible
 - Microsoft recommends PHS as a baseline because it enables leaked credential detection
 - Chose PHS over Pass-Through Authentication (PTA, which requires on-prem DC to be reachable for every cloud login) and Federation (AD FS, complex infrastructure most companies are migrating away from)
+
+![Password_Hash_Sync](04_Password_Hash_Sync.png)
 
 **Single Sign-On: Enabled**
 - Domain-joined users access M365 apps without additional password prompts when already logged into their Windows session
@@ -63,6 +69,8 @@ Installed Entra Connect Sync on DC01 (dedicated sync server is ideal in producti
 - Password Writeback - allows cloud password resets to write back to on-prem AD
 - Password Hash Synchronization (default)
 
+![Entra_Connect_Final_Config](05_Entra_Connect_Final_Config.png)
+![Config_Complete](06_Config_Complete.png)
 ---
 
 ## Sync Verification
@@ -73,6 +81,14 @@ Initial sync completed in approximately 2 minutes. Verified in the Entra portal:
 - User attributes matched on-prem: display name, UPN, department, title
 - All security groups synced correctly - department groups, role-based groups, all visible in Entra ID > Groups
 - `Get-ADSyncScheduler` confirmed 30-minute automatic sync cycle active
+
+
+![Users_Added](07_Users_Added.png)
+
+![Groups_Sync](08_Groups_Sync.png)
+
+![Groups_Sync_Entra](09_Groups_Sync_Entra.png)
+
 
 ---
 
@@ -106,6 +122,8 @@ Created a new user (Michael Bigsfield, VP Sales) to test the complete pipeline:
 
 Full onboarding from AD account creation to working email - without touching the cloud once.
 
+![New_User_Added](10_New_User_Added.png)
+
 ---
 
 ## Breakage Exercises
@@ -121,15 +139,21 @@ Set-ADSyncScheduler -SyncCycleEnabled $false
 
 **Diagnosis:** `Get-ADSyncScheduler` shows `SyncCycleEnabled: False`. Fix: re-enable and force a catch-up sync.
 
+![Sync_Disabled_PowerShell](11_Sync_Disabled_PowerShell.png)
+
 ### UPN Changed Back to .local
 
 Changed Michael's UPN back to `@lab.local` and synced. No sync errors appeared - Entra ID silently ignored the change because `.local` isn't a routable domain. The cloud identity retained the old `@MeridianLabSolutions.onmicrosoft.com` UPN.
 
 **Lesson:** The identity doesn't break visibly, but it becomes mismatched between on-prem and cloud. This can cause subtle issues down the road - password sync may not apply correctly, attribute updates may stop flowing. The lack of a visible error makes this harder to catch than an outright failure.
 
+![Created_New_User_Sync_Disabled](12_Created_New_User_Sync_Disabled.png)
+
 ### User Moved Outside Sync Scope
 
 Moved Michael from the Sales OU to Disabled Accounts (outside the synced OU scope). Forced delta sync. Michael was immediately soft-deleted from Entra ID - mailbox, license, Teams access, everything gone.
+
+![Moved_Disabled_Accounts](13_Moved_Disabled_Accounts.png)
 
 **Critical insight:** Attempted to restore from the cloud side while the user was still in the wrong OU - Entra blocked it because the UPN was already claimed by the synced identity. Restoring from the cloud side while the source of truth (AD) still has the user in the wrong place would create an orphaned cloud account and a sync conflict.
 
@@ -141,6 +165,8 @@ This was the most valuable troubleshooting experience of the entire phase.
 
 **What happened:** Needed to log into outlook.office.com as Michael to test email. Reset his password from the M365 admin center (cloud-side reset). Got past the initial login screen but the "create new password / enter current password" prompt rejected the cloud-issued temp password.
 
+![Current_Password_Error](14_Current_Password_Error.png)
+
 **Root cause:** The cloud reset wrote back to AD via password writeback, but the "User must change password at next logon" flag on the AD account created a conflict. The cloud temp password got through the first authentication screen, but the password change prompt was validating against the synced AD password hash - which was still the old password because the sync hadn't fully propagated the writeback.
 
 **Attempted fixes:**
@@ -148,6 +174,8 @@ This was the most valuable troubleshooting experience of the entire phase.
 - Reset from AD again, synced again - still failed
 - Blocked sign-in in Entra, reset in AD, synced, unblocked - still failed
 - Error 50126 in sign-in logs: invalid credentials
+
+![Invalid_Credentials](15_Invalid_Credentials.png)
 
 **Actual resolution:** The password hash sync needed several minutes beyond the delta sync completion to propagate on the authentication side. The AD-set password eventually worked after waiting longer. Confirmed by retesting before the cloud reset - the AD password was accepted.
 

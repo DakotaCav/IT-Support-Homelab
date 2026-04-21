@@ -8,6 +8,8 @@ Exchange Online is the single largest ticket category in desktop support. This p
 
 Created a shared mailbox for the IT help desk team. Granted Full Access and Send As permissions to IT department users.
 
+![Shared_Mailbox](20_Shared_Mailbox.png)
+
 **Design consideration:** Initially wanted to assign permissions to a security group (SG-Helpdesk) rather than individual users - that way new help desk techs automatically get access by being added to the group in AD. Created SG-Helpdesk in on-prem AD, synced to Entra ID, but the Exchange Admin Center GUI only allows adding individual users to shared mailbox permissions, not groups. Ended up assigning users individually through the GUI for the lab.
 
 In production, PowerShell would handle group-based assignment (`Add-MailboxPermission` with the group name), but for a small help desk team, individual assignment through the GUI works fine and is more common at the desktop support level.
@@ -20,6 +22,8 @@ In production, PowerShell would handle group-based assignment (`Add-MailboxPermi
 
 Tested both by sending emails from the shared mailbox and verifying how they appeared to recipients.
 
+![Shared_Mailbox_Test](23_Shared_Mailbox_Test.png)
+
 ---
 
 ## Distribution Lists
@@ -28,11 +32,15 @@ Tested both by sending emails from the shared mailbox and verifying how they app
 
 Created as a dynamic distribution list that automatically includes all users with Exchange mailboxes. Membership updates automatically - no manual management when employees join or leave. Restricted sending permissions so only designated users (HR/leadership) can send to it, preventing reply-all storms from every employee.
 
+![Dynamic_Distribution_List](19_Dynamic_Distribution_List.png)
+
 ### Department Distribution Lists
 
 Created static distribution lists for each department: DL-Sales, DL-Engineering, DL-HR, DL-Finance, DL-IT. Added appropriate members manually.
 
 **Why distribution lists instead of M365 Groups:** Distribution lists are purely for email routing - send to one address, everyone in the list gets a copy. No shared mailbox, no SharePoint site, no calendar. M365 Groups bundle all of that together, which is overkill when all you need is "email this address and five people get it." Different tools for different purposes.
+
+![Distribution_Lists](18_Distribution_Lists.png)
 
 **Understanding the group types:**
 - **Distribution list** - email routing only, no access control capability
@@ -49,6 +57,8 @@ Created static distribution lists for each department: DL-Sales, DL-Engineering,
 
 Created a transport rule that prepends `[External]` to the subject line of all inbound email from outside the organization. This is one of the most common security configurations in production - helps users immediately identify external senders as a basic phishing defense.
 
+![Mail_Flow_Rules](21_Mail_Flow_Rules.png)
+
 ### Confidentiality Disclaimer
 
 Created a rule appending a confidentiality disclaimer to all outbound email to external recipients. Used HTML formatting for proper presentation (line breaks, gray italic text, horizontal rule separator).
@@ -58,6 +68,8 @@ Created a rule appending a confidentiality disclaimer to all outbound email to e
 ### Message Trace
 
 Traced test emails through Exchange Admin Center → Mail Flow → Message Trace. Verified both mail flow rules firing in the trace details - could see exactly which rules were applied during transport.
+
+![Message_Trace](22_Message_Trace.png)
 
 **Time zone note:** Exchange Online logs everything in UTC. Pennsylvania (EDT) is UTC-4, so a 10:52 PM local email shows as 2:52 AM UTC the next day in the trace. Important to know when correlating user-reported times with trace timestamps.
 
@@ -74,6 +86,9 @@ Configured calendar delegation between two users - one as the executive, one as 
 Editor permissions allow the delegate to view the calendar and create/modify meetings on behalf of the executive. Tested by logging in as the delegate and adding calendar entries.
 
 For the breakage exercise, removed the delegate's access and verified they could no longer see or edit the calendar.
+
+![Calender_Permissions](28_Calender_Permissions.png)
+
 
 ---
 
@@ -142,11 +157,19 @@ This is one of the most common help desk tickets: "I got a new phone and can't l
 
 Removed a user from SG-M365-E5-License in on-prem AD and forced a delta sync. User immediately lost access to Outlook - OWA showed no mailbox or license assignment. Re-added to the group in AD, synced, and the mailbox recovered with all data intact (Exchange retains the mailbox in soft-delete for 30 days).
 
+![Remover_User_License](24_Remover_User_License.png)
+
 **Note:** During recovery, the M365 admin center was experiencing a service disruption. Checked Service Health dashboard to confirm it was Microsoft-side, not a configuration issue. The fix (re-adding to the group in AD) worked even though the admin center GUI was degraded - the sync pipeline operates independently. This is the resilience of the hybrid model.
+
+![Service_Health](25_Service_Health.png)
 
 ### Mail Flow Rule Blocking External Email
 
 Created a transport rule blocking all outbound external email. Internal email still worked. Message trace clearly identified the blocking rule as the cause. This simulates a misconfigured transport rule in production - help desk gets flooded with "I can't send email" tickets, and the person who checks message trace and identifies the rule within 2 minutes is the hero.
+
+![Block_External_Mail](26_Block_External_Mail.png)
+
+![Message_Trace_Fail](27_Message_Trace_Fail.png)
 
 ### Send As Without Full Access
 

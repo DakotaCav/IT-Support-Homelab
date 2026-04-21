@@ -16,12 +16,16 @@ Created a dynamic device group `SG-Autopilot-Devices` in Entra ID with the rule:
 ```
 This automatically captures any device registered in Autopilot - no manual group management needed when new devices are added.
 
+![Device_Windows_Autopilot](38_Device_Windows_Autopilot.png)
+
 Assigned the Autopilot deployment profile (`AutoPilotDemo`) to SG-Autopilot-Devices:
 - Mode: User-Driven
 - Join type: Entra ID joined
 - Account type: Standard (not admin)
 - OOBE screens: Hidden (privacy, EULA, etc.)
 - Device naming template: PA-CL111
+
+![Intune_Deployment_Profile](37_Intune_Deployment_Profile.png)
 
 ### Enrollment Result
 
@@ -35,6 +39,8 @@ Signed in as david.okafor@MeridianLabSolutions.onmicrosoft.com (synced hybrid us
 - **Compliance status:** Compliant in the Intune portal
 - **Device record:** Shows in Intune as corporate-owned, managed by Intune, Entra ID joined
 
+![Autopilot_Configuration](40_Autopilot_Configuration.png)
+
 ---
 
 ## Compliance Policy
@@ -47,6 +53,8 @@ Created a Windows compliance policy requiring:
 
 Assigned to SG-Autopilot-Devices. Device evaluated as Compliant immediately after enrollment since all requirements were met by the configuration profiles pushing the settings.
 
+![Compliance_Policy](39_Compliance_Policy.png)
+
 **How compliance connects to Conditional Access:** Compliance policies define "what does a healthy device look like." Conditional Access policies can then enforce "only healthy devices can access M365." A noncompliant device gets blocked from Outlook, Teams, SharePoint - everything. The user calls and says "I can't access anything," and you check Intune compliance status to find the specific policy that's failing.
 
 ---
@@ -58,6 +66,9 @@ Assigned to SG-Autopilot-Devices. Device evaluated as Compliant immediately afte
 Created a configuration profile enforcing BitLocker device encryption with silent encryption enabled (no user prompt). After deployment, BitLocker activated on the device and the recovery key was automatically escrowed to Entra ID.
 
 Recovery key verified at: Entra ID → Devices → PA-CL111 → Recovery Keys.
+
+![Bitlocker_Configured](43_Bitlocker_Configured.png)
+
 
 ### Device Restrictions
 
@@ -76,8 +87,13 @@ Configuration:
 - Architecture: 64-bit
 - Assignment: Required (auto-installs during enrollment)
 
+![App_Deployment](41_App_Deployment.png)
+
 Apps installed automatically during the Autopilot Enrollment Status Page phase. By the time the user reached the desktop, all applications were available in the Start menu and Outlook was auto-configured with the user's Exchange Online mailbox.
 
+![m365_Apps_Installed](42_m365_Apps_Installed.png)
+
+![Device_Compliant](44_Device_Compliant.png)
 ---
 
 ## The Complete Pipeline - End to End

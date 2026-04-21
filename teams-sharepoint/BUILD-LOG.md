@@ -16,21 +16,33 @@ Reviewed external access (federation), guest access, and messaging policies in t
 
 Enabled guest access and invited a personal Microsoft account as a guest to test the experience.
 
+![Teams_Guest_Access](32_Teams_Guest_Access.png)
+
 ### Department Teams
 
 Created Teams for each department with appropriate members. Each Team automatically provisioned a Microsoft 365 Group with shared mailbox, SharePoint site, and calendar underneath.
+
+![Teams_Creation](29_Teams_Creation.png)
 
 ### Private Channels
 
 Created an IT-Leadership private channel within the IT team. Hit an issue where the channel name "Leadership" was rejected - private channel names must be unique across the entire tenant, not just within the team. Renamed to "IT-Leadership" and it worked.
 
+![Teams_Channel_Issue](30_Teams_Channel_Issue.png)
+
 **Troubleshooting process:** Checked Teams policies (all fine), tried changing the owner to myself (didn't help), searched the issue and found the name conflict requirement. Resolved by using a unique name. Teams error messages are notoriously vague - half the battle is knowing to try the less obvious things.
+
+![Teams_Channel_Resolved](31_Teams_Channel_Resolved.png)
 
 ### Meeting Policies - RBAC for Recording
 
 Configured meeting policies so recording is disabled for standard users but enabled for managers.
 
+![Teams_Meeting_Policy_Global](33_Teams_Meeting_Policy_Global.png)
+
 **Approach:** Made the Global (Org-wide default) policy restrictive - disabled cloud recording for everyone. Created a custom "Managers - Allow Recording" policy with recording enabled. Assigned the custom policy to SG-Managers (created in on-prem AD, synced to Entra ID) using group-based policy assignment with Rank 1 priority.
+
+![Teams_Allow_Manager_Recording](34_Teams_Allow_Manager_Recording.png)
 
 This follows the same RBAC pattern used everywhere else in the lab: restrictive by default, open up by group membership. New hires automatically get the restrictive policy without any manual assignment. Managers get the override through their security group.
 
@@ -52,6 +64,8 @@ SharePoint is a cloud-based file storage and collaboration platform - essentiall
 
 Users access SharePoint through Teams (most common - they don't even realize it's SharePoint), direct browser links, OneDrive sync to File Explorer, or links shared via email.
 
+![Sharepoint_Folders](35_Sharepoint_Folders.png)
+
 ### Permission Inheritance and Broken Inheritance
 
 **Default behavior:** Everything in a document library inherits permissions from the site. If the IT team's SharePoint site gives access to all IT members, every folder and file inside also gives access to all IT members.
@@ -62,11 +76,15 @@ Users access SharePoint through Teams (most common - they don't even realize it'
 
 **Password sync delay encountered:** Resetting David Okafor's password in on-prem AD and syncing took longer than expected to propagate to the cloud. Used the cloud-side password reset in Entra as a faster workaround for immediate testing needs. In production: reset from the cloud when you need cloud access now, reset from AD when you need on-prem access now.
 
+![Sharepoint_Permissions_Folder](35_Sharepoint_Permissions_Folder.png)
+
 This is the most common SharePoint support ticket: "I can't access this folder." The answer is almost always a permissions issue - either the user isn't in the right group, or inheritance was broken somewhere unexpected.
 
 ### Document Versioning
 
 Enabled versioning on a document library. Edited a document multiple times, then restored an older version through Version History. Restoring creates a new version (e.g., restoring v1.0 creates v3.0 that's a copy of v1.0) - the full history is always preserved and you can even undo a restore.
+
+![Version History](36_Version History.png)
 
 This is the answer when a user says "I accidentally saved over my file." No data loss, full recovery through version history.
 
