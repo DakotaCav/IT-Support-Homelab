@@ -127,4 +127,4 @@ Entra Connect bridges on-prem AD and Entra ID. Runs on an on-prem server, syncs 
 
 **Termination timing gap:** Account disabled at 2:00 PM, last sync at 1:45 PM - employee retains full cloud access until 2:15 PM. For a disgruntled employee, that's a 30-minute window to exfiltrate data. Proper offboarding requires disabling the AD account AND blocking M365 sign-in AND revoking active sessions simultaneously.
 
-**Sync server failure:** If Entra Connect goes down, both environments keep working independently but drift apart. New AD users don't appear in M365, password changes don't propagate. Users authenticate with stale credentials - a security risk nobody notices until something breaks.
+**Sync server failure:**  If Entra Connect goes down, both environments keep working independently but drift apart. New AD users don't appear in M365, password changes don't propagate. Users authenticate with stale credentials - a security risk nobody notices until something breaks.

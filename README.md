@@ -18,7 +18,7 @@ Before touching a single VM, I spent time building a deep understanding of the n
 | WS-PC01 | Windows 10 Pro | Domain-joined workstation | DHCP (10.0.0.100) |
 | pfSense | pfSense CE | Firewall, router, VPN, VLANs | 10.0.0.1 |
 
-**Network:** 10.0.0.0/24 - DHCP range 10.0.0.100-200, static assignments below .100. Gateway at 10.0.0.1 (pfSense). DNS forwarders to 1.1.1.1 and 8.8.8.8.
+**Network:** 10.0.0.0/24  - DHCP range 10.0.0.100-200, static assignments below .100. Gateway at 10.0.0.1 (pfSense). DNS forwarders to 1.1.1.1 and 8.8.8.8.
 
 ## What I Built and What Broke
 

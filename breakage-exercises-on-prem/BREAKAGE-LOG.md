@@ -139,4 +139,4 @@ Root cause: Wrong DNS means names can't resolve, but network connectivity is int
 Fix: Switched adapter back to DHCP, ipconfig /flushdns, ipconfig /release and /renew. Connection restored.
 Ticket closure:
 
-User reported workstation internet down. ipconfig /all showed static DNS 10.0.0.30 instead of DHCP-assigned 10.0.0.10. Switched to DHCP, flushed DNS cache, release/renew. Resolved. Static DNS origin unknown - flagged for follow-up.
+User reported workstation internet down. ipconfig /all showed static DNS 10.0.0.30 instead of DHCP-assigned 10.0.0.10. Switched to DHCP, flushed DNS cache, release/renew. Resolved. Static DNS origin unknown - flagged for follow-up .

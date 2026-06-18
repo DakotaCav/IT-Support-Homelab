@@ -10,7 +10,7 @@ Created a shared mailbox for the IT help desk team. Granted Full Access and Send
 
 ![Shared_Mailbox](20_Shared_Mailbox.png)
 
-**Design consideration:** Initially wanted to assign permissions to a security group (SG-Helpdesk) rather than individual users - that way new help desk techs automatically get access by being added to the group in AD. Created SG-Helpdesk in on-prem AD, synced to Entra ID, but the Exchange Admin Center GUI only allows adding individual users to shared mailbox permissions, not groups. Ended up assigning users individually through the GUI for the lab.
+**Design consideration:**  Initially wanted to assign permissions to a security group (SG-Helpdesk) rather than individual users - that way new help desk techs automatically get access by being added to the group in AD. Created SG-Helpdesk in on-prem AD , synced to Entra ID, but the Exchange Admin Center GUI only allows adding individual users to shared mailbox permissions, not groups. Ended up assigning users individually through the GUI for the lab.
 
 In production, PowerShell would handle group-based assignment (`Add-MailboxPermission` with the group name), but for a small help desk team, individual assignment through the GUI works fine and is more common at the desktop support level.
 

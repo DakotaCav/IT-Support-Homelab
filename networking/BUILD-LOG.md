@@ -173,4 +173,4 @@ Connection testing from the host machine failed due to VirtualBox networking lim
 **Root cause investigation:** DNS was set to a static IP rather than DHCP-assigned. Most likely causes in production: a previous technician set it during troubleshooting and forgot to revert, or the user followed an internet guide to "speed up DNS" by hardcoding an external server. When one client has wrong DNS but everyone else is fine, static override is the first suspect.
 
 **Ticket closure:**
-> User reported workstation internet is down. Ran `ipconfig /all` - workstation pointing to static DNS server 10.0.0.30 instead of DHCP-assigned 10.0.0.10. Switched adapter back to DHCP, flushed DNS cache, ran release/renew. Connection restored. Root cause of static DNS entry unknown - flagged for follow-up to prevent recurrence.
+> User reported workstation  internet is down. Ran `ipconfig /all` - workstation pointing to static DNS server 10.0.0.30 instead of DHCP-assigned 10.0.0.10. Switched adapter back to DHCP, flushed DNS cache, ran release/renew. Connection restored. Root cause of static DNS entry unknown - flagged for follow-up to prevent recurrence.

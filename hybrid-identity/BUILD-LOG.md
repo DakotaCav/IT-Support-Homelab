@@ -14,7 +14,7 @@ Wiped the existing M365 tenant - deleted all manually created users, groups, and
 
 ### UPN Suffix
 
-Added `MeridianLabSolutions.onmicrosoft.com` as an alternative UPN suffix in Active Directory Domains and Trusts. By default, on-prem users have UPNs ending in `@lab.local`, which Entra Connect won't sync to the cloud because `.local` isn't a routable domain.
+Added  `MeridianLabSolutions.onmicrosoft.com` as an alternative UPN suffix in Active Directory Domains and Trusts. By default, on-prem users have UPNs ending in `@lab.local`, which Entra Connect won't sync to the cloud because `.local` isn't a routable domain.
 
 Updated all users in the Corp OU to the new suffix via PowerShell:
 

@@ -72,7 +72,7 @@ Users access SharePoint through Teams (most common - they don't even realize it'
 
 **Breaking inheritance:** Created an "IT-Leadership-Confidential" folder and broke permission inheritance so only SG-Managers could access it. Removed the IT-Team Members group that inherited from the parent.
 
-**Verification:** Logged in as a regular IT user (David Okafor, not in SG-Managers) - the confidential folder was completely invisible. Logged in as a manager - full access. The folder doesn't even show up for unauthorized users, which is the correct behavior.
+**Verification:**  Logged in as a regular IT user (David Okafor, not in SG-Managers) - the confidential folder was completely invisible. Logged in as a manager - full access. The folder doesn't even show up for unauthorized users, which is the correct behavior.
 
 **Password sync delay encountered:** Resetting David Okafor's password in on-prem AD and syncing took longer than expected to propagate to the cloud. Used the cloud-side password reset in Entra as a faster workaround for immediate testing needs. In production: reset from the cloud when you need cloud access now, reset from AD when you need on-prem access now.
 

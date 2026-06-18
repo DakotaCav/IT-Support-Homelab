@@ -93,5 +93,5 @@
 
 **USB Restriction** - Linked to Engineering, Finance, HR, and IT OUs. Denies all removable storage access. Sales excluded due to lower data sensitivity - their customer data lives in cloud CRMs rather than local files.
 
-**Full GPO Layout** - Password Policy at domain level, Drive Mapping at Departments, USB Restriction on high-risk department OUs, Workstation Security on Workstations OU.
+**Full GPO Layout** - Password Policy at domain level , Drive Mapping at Departments, USB Restriction on high-risk department OUs, Workstation Security on Workstations OU.
 ![GPO Layout](26_GPO_Layout.png)

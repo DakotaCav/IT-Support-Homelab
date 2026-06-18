@@ -6,7 +6,7 @@ This phase connects everything: a user created in on-prem AD, synced to Entra ID
 
 ## Autopilot Re-Enrollment
 
-### Device Preparation
+### Device Preparation 
 
 Wiped the Autopilot device and re-enrolled it into the clean hybrid tenant. The hardware hash was still registered in Intune from the previous enrollment - hardware hashes are tied to physical hardware and survive wipes.
 
@@ -14,7 +14,7 @@ Created a dynamic device group `SG-Autopilot-Devices` in Entra ID with the rule:
 ```
 (device.devicePhysicalIDs -any (_ -contains "[ZTDId]"))
 ```
-This automatically captures any device registered in Autopilot - no manual group management needed when new devices are added.
+This automatically captures any device registered in Autopilot - no manual group management needed when new devices are added .
 
 ![Device_Windows_Autopilot](38_Device_Windows_Autopilot.png)
 
