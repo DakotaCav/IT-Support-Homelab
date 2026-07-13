@@ -15,7 +15,7 @@ Deployed pfSense CE on a VirtualBox VM with two network adapters:
 
 pfSense sits between the lab network and the internet. Every device on 10.0.0.0/24 has its default gateway set to 10.0.0.1 (configured in DC01's DHCP scope back in Phase 1). All internet-bound traffic flows through pfSense, which handles routing, NAT translation, and firewall enforcement.
 
-**DHCP disabled on pfSense LAN** - DC01 handles DHCP for the corporate network. Running two DHCP servers on the same subnet causes IP assignment conflicts, the same problem identified during Phase 1 setup.
+**DHCP disabled on pfSense LAN** - DC01 handles DHCP for the corporate network. Running two DHCP servers on the same subnet causes IP assignment conflicts
 
 ### Installation Notes
 
@@ -148,13 +148,11 @@ The VPN tunnel network is just another subnet pfSense has a foot on - same routi
 
 ### Testing Limitation
 
-OpenVPN server was running and verified with `sockstat -4 -l | grep 1194` showing the process listening on UDP 1194. Client configuration exported successfully.
-
 Connection testing from the host machine failed due to VirtualBox networking limitations:
-- **NAT port forwarding:** Configured UDP 1194 forwarding from host to pfSense WAN. Ran `tcpdump -i em0 udp port 1194` on pfSense - no packets arrived. Port forwarding was not delivering UDP traffic despite correct configuration.
+
 - **Bridged mode:** Switched pfSense WAN to bridged adapter on host Wi-Fi (Intel Wi-Fi 6E AX211). pfSense received an IP from the lab network (10.0.0.31) instead of the home router - the Wi-Fi driver doesn't support bridged mode. Tested with promiscuous mode set to "Allow All" - same result.
 
-**Conclusion:** VPN server configuration is correct. Testing was constrained by VirtualBox's NAT UDP forwarding limitations and Wi-Fi bridging incompatibility. In a Proxmox or bare-metal environment with proper network interfaces, this would test successfully.
+**Conclusion:** In a Proxmox or bare-metal environment with proper network interfaces, I believe this would test successfully.
 
 ---
 

@@ -9,7 +9,7 @@
 **AD DS Promotion** - Promoted to domain controller for lab.local. Server online at 10.0.0.10.
 ![AD DS](03_Active_Directory.png)
 
-**DNS - Forward Lookup Zone** - lab.local and _msdcs.lab.local zones created automatically during AD promotion. Both Active Directory-Integrated.
+**DNS - Forward Lookup Zone** - lab.local and _msdcs.lab.local zones created automatically during AD promotion.
 ![Forward Lookup](04_Forward_Lookup_Zone.png)
 
 **DNS - Reverse Lookup Zone** - Created for 10.0.0.x network, enabling IP-to-hostname resolution.
@@ -44,7 +44,7 @@
 **Domain Join** - Joined DC02 to lab.local before promoting to domain controller.
 ![DC02 Domain Join](14_DC01_Joined_Domain.png)
 
-**Replication Verification** - Ran `repadmin /showrepl` on DC02. All five naming contexts (domain, configuration, schema, DomainDnsZones, ForestDnsZones) replicated successfully from DC01 with zero failures.
+**Replication Verification** - Ran `repadmin /showrepl` on DC02. Replicated successfully from DC01 with zero failures.
 ![Replication](15_repl_summary.png)
 
 ## OU Structure
@@ -54,10 +54,10 @@
 
 ## User Management
 
-**Manual Creation** - Created first user account manually through AD Users and Computers to understand the process.
+**Manual Creation** - Created first user accounts manually through AD Users and Computers to understand the process.
 ![Manual User](17_User_Creation.png)
 
-**Bulk Creation via PowerShell** - Deployed 25 users across all departments using a CSV import script. Username format: firstname.lastname. All accounts set with ChangePasswordAtLogon enabled.
+**Bulk Creation via PowerShell** - Deployed 25 users across all departments using a CSV import script created by Claude. Username format: firstname.lastname. All accounts set with ChangePasswordAtLogon enabled.
 ![PowerShell Bulk Users](17_User_Creation_Powershell.png)
 
 ## DNS Failover Fix (Self-Identified)
@@ -85,7 +85,7 @@
 ![Password Policy Settings](22_GPO_Creation_Pass_Policy.png)
 ![Linked to Domain](23_GPO_Linked_to_Domain.png)
 
-**Workstation Security** - Linked to Workstations OU. Windows Firewall enforced on (all profiles), RDP enabled, automatic updates set to auto-download and install at 3:00 AM, sleep timeout 600 seconds.
+**Workstation Security** - Linked to Workstations OU. Windows Firewall enforced, RDP enabled, automatic updates set to auto-download and install at 3:00 AM, sleep timeout 600 seconds.
 ![Workstation GPO](24_Workstation_GPO.png)
 
 **Drive Mapping** - Linked to Departments OU. Maps department shares (e.g., \\SRV-FILE\Finance as F: drive) using item-level targeting by security group. Only members of SG-Finance get the Finance drive, only SG-Sales gets the Sales drive, etc. One GPO handles all departments instead of creating separate policies per department.

@@ -1,6 +1,6 @@
 # Phase 5: Exchange Online Administration - Build Log
 
-Exchange Online is the single largest ticket category in desktop support. This phase covers shared mailboxes, distribution lists, mail flow rules, message trace, calendar delegation, and Outlook client troubleshooting - including discovering that traditional troubleshooting steps don't apply on modern Intune-managed devices.
+This phase covers shared mailboxes, distribution lists, mail flow rules, message trace, calendar delegation, and Outlook client troubleshooting - including discovering that traditional troubleshooting steps don't apply on modern Intune-managed devices.
 
 ---
 
@@ -11,8 +11,6 @@ Created a shared mailbox for the IT help desk team. Granted Full Access and Send
 ![Shared_Mailbox](20_Shared_Mailbox.png)
 
 **Design consideration:**  Initially wanted to assign permissions to a security group (SG-Helpdesk) rather than individual users - that way new help desk techs automatically get access by being added to the group in AD. Created SG-Helpdesk in on-prem AD , synced to Entra ID, but the Exchange Admin Center GUI only allows adding individual users to shared mailbox permissions, not groups. Ended up assigning users individually through the GUI for the lab.
-
-In production, PowerShell would handle group-based assignment (`Add-MailboxPermission` with the group name), but for a small help desk team, individual assignment through the GUI works fine and is more common at the desktop support level.
 
 **Shared mailbox auto-mapping:** After granting Full Access, the shared mailbox didn't appear in Outlook immediately. Exchange permissions take up to 60 minutes to auto-map. The workaround is having the user manually add it: right-click mailbox name → Add shared folder → type the shared mailbox address. This is one of the most common "it's not working" calls that's actually just propagation delay.
 
@@ -61,7 +59,7 @@ Created a transport rule that prepends `[External]` to the subject line of all i
 
 ### Confidentiality Disclaimer
 
-Created a rule appending a confidentiality disclaimer to all outbound email to external recipients. Used HTML formatting for proper presentation (line breaks, gray italic text, horizontal rule separator).
+Created a rule appending a confidentiality disclaimer to all outbound email to external recipients. 
 
 **Testing observation:** Initial formatting was rough - no whitespace before the disclaimer and the [External] tag had no space after the bracket, joining it to the subject. Fixed by editing the rules: added a trailing space to the external tag and used HTML in the disclaimer body.
 
@@ -159,7 +157,7 @@ Removed a user from SG-M365-E5-License in on-prem AD and forced a delta sync. Us
 
 ![Remover_User_License](24_Remover_User_License.png)
 
-**Note:** During recovery, the M365 admin center was experiencing a service disruption. Checked Service Health dashboard to confirm it was Microsoft-side, not a configuration issue. The fix (re-adding to the group in AD) worked even though the admin center GUI was degraded - the sync pipeline operates independently. This is the resilience of the hybrid model.
+**Note:** During recovery, the M365 admin center was experiencing a service disruption. Checked Service Health dashboard to confirm it was Microsoft-side, not a configuration issue. 
 
 ![Service_Health](25_Service_Health.png)
 

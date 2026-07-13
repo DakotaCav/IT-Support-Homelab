@@ -10,8 +10,8 @@ Teams and SharePoint are tightly integrated - every Team auto-creates a SharePoi
 
 Reviewed external access (federation), guest access, and messaging policies in the Teams Admin Center.
 
-- **External access (federation):** Controls whether users can chat/call with people at other organizations who also use Teams. Both parties stay in their own tenants - no guest invitations needed. Like talking across the fence.
-- **Guest access:** Inviting someone into your tenant. They show up with a "(Guest)" tag, can see channels, files, join meetings. Like inviting someone into your yard.
+- **External access (federation):** Controls whether users can chat/call with people at other organizations who also use Teams. Both parties stay in their own tenants - no guest invitations needed.
+- **Guest access:** Inviting someone into your tenant. They show up with a "(Guest)" tag, can see channels, files, join meetings.
 - **Messaging policies:** Controls what users can do in chat - edit messages, delete messages, use GIFs, priority notifications.
 
 Enabled guest access and invited a personal Microsoft account as a guest to test the experience.
@@ -30,7 +30,7 @@ Created an IT-Leadership private channel within the IT team. Hit an issue where 
 
 ![Teams_Channel_Issue](30_Teams_Channel_Issue.png)
 
-**Troubleshooting process:** Checked Teams policies (all fine), tried changing the owner to myself (didn't help), searched the issue and found the name conflict requirement. Resolved by using a unique name. Teams error messages are notoriously vague - half the battle is knowing to try the less obvious things.
+**Troubleshooting process:** Checked Teams policies (all fine), tried changing the owner to myself (didn't help), searched the issue and found the name conflict requirement. Resolved by using a unique name.
 
 ![Teams_Channel_Resolved](31_Teams_Channel_Resolved.png)
 
@@ -74,8 +74,6 @@ Users access SharePoint through Teams (most common - they don't even realize it'
 
 **Verification:**  Logged in as a regular IT user (David Okafor, not in SG-Managers) - the confidential folder was completely invisible. Logged in as a manager - full access. The folder doesn't even show up for unauthorized users, which is the correct behavior.
 
-**Password sync delay encountered:** Resetting David Okafor's password in on-prem AD and syncing took longer than expected to propagate to the cloud. Used the cloud-side password reset in Entra as a faster workaround for immediate testing needs. In production: reset from the cloud when you need cloud access now, reset from AD when you need on-prem access now.
-
 ![Sharepoint_Permissions_Folder](35_Sharepoint_Permissions_Folder.png)
 
 This is the most common SharePoint support ticket: "I can't access this folder." The answer is almost always a permissions issue - either the user isn't in the right group, or inheritance was broken somewhere unexpected.
@@ -84,7 +82,7 @@ This is the most common SharePoint support ticket: "I can't access this folder."
 
 Enabled versioning on a document library. Edited a document multiple times, then restored an older version through Version History. Restoring creates a new version (e.g., restoring v1.0 creates v3.0 that's a copy of v1.0) - the full history is always preserved and you can even undo a restore.
 
-![Version History](36_Version History.png)
+![Version_History](36_Version_History.png)
 
 This is the answer when a user says "I accidentally saved over my file." No data loss, full recovery through version history.
 

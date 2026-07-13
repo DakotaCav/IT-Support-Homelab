@@ -2,11 +2,13 @@
 
 This documents the connection of on-prem Active Directory to a Microsoft 365 E5 tenant via Entra Connect. Users are created and managed in on-prem AD, synced to Entra ID, and automatically licensed through group-based licensing. The entire onboarding pipeline - from AD account creation to a working mailbox - flows without touching the cloud.
 
+The goal of this was to simulate a hybrid identity environment so I can get a look at what it's like to work in enterprise IT that uses a similar setup. I do not claim to fully understand every portion of this or that I can do it in a production environment at my current level. 
+
 ---
 
 ## Tenant Cleanup
 
-Wiped the existing M365 tenant - deleted all manually created users, groups, and Conditional Access policies. Started with a clean slate so the tenant reflects only what syncs from on-prem AD. This prevents soft-match conflicts and duplicate objects during the initial Entra Connect sync.
+Wiped the existing M365 tenant - deleted all manually created users, groups, and Conditional Access policies. Started with a clean slate so the tenant reflects only what syncs from on-prem AD. 
 
 ---
 
@@ -16,7 +18,7 @@ Wiped the existing M365 tenant - deleted all manually created users, groups, and
 
 Added  `MeridianLabSolutions.onmicrosoft.com` as an alternative UPN suffix in Active Directory Domains and Trusts. By default, on-prem users have UPNs ending in `@lab.local`, which Entra Connect won't sync to the cloud because `.local` isn't a routable domain.
 
-Updated all users in the Corp OU to the new suffix via PowerShell:
+Updated all users in the Corp OU to the new suffix via a PowerShell script written by Claude:
 
 ```powershell
 Get-ADUser -Filter * -SearchBase "OU=Corp,DC=lab,DC=local" | ForEach-Object {
@@ -42,7 +44,7 @@ The uppercase `SMTP:` prefix designates the primary email address. Exchange Onli
 
 ## Entra Connect Installation and Configuration
 
-Installed Entra Connect Sync on DC01 (dedicated sync server is ideal in production, but DC01 works for a lab).
+Installed Entra Connect Sync on DC01.
 
 ![Entra_Connect_Sync_Agent](03_Entra_Connect_Sync_Agent.png)
 
@@ -96,7 +98,7 @@ Initial sync completed in approximately 2 minutes. Verified in the Entra portal:
 
 ### Setup
 
-Created `SG-M365-E5-License` security group in on-prem AD (Security Groups OU). Added all department users across Engineering, Finance, HR, IT, and Sales using `-SearchScope Subtree` to recurse through all sub-OUs.
+Created `SG-M365-E5-License` security group in on-prem AD (Security Groups OU). Added all department users across Engineering, Finance, HR, IT, and Sales.
 
 After delta sync, assigned Office 365 E5 licenses to the group in M365 admin center. All 21 group members automatically received licenses - no manual per-user assignment.
 
@@ -155,7 +157,7 @@ Moved Michael from the Sales OU to Disabled Accounts (outside the synced OU scop
 
 ![Moved_Disabled_Accounts](13_Moved_Disabled_Accounts.png)
 
-**Critical insight:** Attempted to restore from the cloud side while the user was still in the wrong OU - Entra blocked it because the UPN was already claimed by the synced identity. Restoring from the cloud side while the source of truth (AD) still has the user in the wrong place would create an orphaned cloud account and a sync conflict.
+**Critical insight:** Attempted to restore from the cloud side while the user was still in the wrong OU - Entra blocked it. Restoring from the cloud side while the source of truth (AD) still has the user in the wrong place would create an orphaned cloud account and a sync conflict.
 
 **Correct recovery:** Always fix from the source of truth. Moved Michael back to Sales OU in AD, forced delta sync, account restored in Entra ID with license and mailbox intact.
 
@@ -167,7 +169,7 @@ This was the most valuable troubleshooting experience of the entire phase.
 
 ![Current_Password_Error](14_Current_Password_Error.png)
 
-**Root cause:** The cloud reset wrote back to AD via password writeback, but the "User must change password at next logon" flag on the AD account created a conflict. The cloud temp password got through the first authentication screen, but the password change prompt was validating against the synced AD password hash - which was still the old password because the sync hadn't fully propagated the writeback.
+**Root cause:** The cloud reset wrote back to AD via password writeback, but the "User must change password at next logon" flag on the AD account created a conflict. The cloud temp password got through the first authentication screen, but the password change prompt was validating against the synced AD password - which was still the old password because the sync hadn't fully propagated the writeback.
 
 **Attempted fixes:**
 - Reset from AD via PowerShell, forced delta sync - still failed
